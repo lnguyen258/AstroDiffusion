@@ -1,0 +1,50 @@
+model: 
+    Channels: [64, 128, 256, 512, 512, 384]
+    Attentions: [False, True, False, False, False, True]
+    Upscales: [False, False, False, True, True, True]
+    num_groups: 32 
+    dropout_prob: 0.1
+    num_heads: 8
+    input_channels: 5
+    output_channels: 5
+    time_steps: 1000
+
+
+train:
+    batch_size: 32
+    criterion: 
+        # All string-supported loss can be found in 'src/loss/loss_registry.py'
+        name: 'mse_loss'
+        kwargs:
+            reduction: 'mean' # 'mean', 'sum', 'none'
+    
+    optimizer:
+        # All string-supported optimizer can be found in 'src/loss/optim_registry.py' 
+        name: 'adam' 
+        kwargs:
+            lr: 0.00002
+            eps: 0.0001
+            weight_decay: 0.0
+    scheduler:
+        # All string-supported schedulers can be found in 'src/optim/scheduler_registry.py'
+        name: 'exponential_lr'
+        kwargs:
+            gamma: 0.96
+    callbacks: 
+        # All string-supported callbacks can be found in 'src/utils/callbacks.py'
+        - name: 'early_stopping'
+          kwargs:
+              monitor: 'val_loss'  # 'val_loss' or 'val_acc'
+              mode: 'min'  # 'min' or 'max'
+              patience: 2
+              min_delta: 0.01
+    num_epochs: 20
+    start_epoch: 0
+    logging_dir: 'log'
+    logging_steps: 100
+    progress_bar: True
+    save_best: True
+    save_ckpt: True
+    save_fig: True
+    num_workers: 8
+    pin_memory: True
